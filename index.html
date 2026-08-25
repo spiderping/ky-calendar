@@ -1,0 +1,927 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<meta name="theme-color" content="#16121c" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="KY Calendar" />
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="icon" href="icons/icon-192.png" />
+<link rel="apple-touch-icon" href="icons/icon-192.png" />
+<title>تقویم کاری کمیل یزدانی</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#16121c;
+    --bg-2:#1c1626;
+    --surface:#211a2c;
+    --surface-2:#2a2138;
+    --border: rgba(243,237,224,0.09);
+    --text:#f3ede0;
+    --text-dim:#c9c0d6;
+    --text-muted:#8f83a0;
+    --gold:#d9a441;
+    --gold-dim: rgba(217,164,65,0.16);
+    --rose:#c17a6b;
+    --teal:#4f8a82;
+    --lav:#8b83a8;
+    --event-orange:#e2812c;
+    --event-orange-bg: rgba(226,129,44,0.20);
+    --holiday-red:#e2685a;
+    --radius-lg: 22px;
+    --radius-md: 14px;
+    --radius-sm: 10px;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    background: radial-gradient(120% 60% at 50% -10%, #241b30 0%, var(--bg) 55%);
+    color:var(--text);
+    font-family:'Vazirmatn', sans-serif;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important; transition-duration:0.001ms !important;}
+  }
+  .shell{
+    width:100%;
+    max-width:460px;
+    min-height:100vh;
+    padding:18px 16px 100px;
+    position:relative;
+  }
+
+  /* ---------- Header ---------- */
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:22px;
+  }
+  .brand{ display:flex; align-items:center; gap:10px; }
+  .monogram{
+    width:42px; height:42px; border-radius:50%;
+    background: linear-gradient(155deg, var(--gold), #a5762b);
+    color:#1c1305; font-weight:800; font-size:15px;
+    display:flex; align-items:center; justify-content:center;
+    letter-spacing:0.5px;
+    box-shadow: 0 6px 16px rgba(217,164,65,0.25);
+  }
+  .brand-text b{ display:block; font-size:15px; font-weight:800; letter-spacing:0.2px; }
+  .brand-text span{ display:block; font-size:11px; color:var(--text-muted); margin-top:1px; }
+  .icon-btn{
+    width:33px; height:33px; border-radius:50%;
+    background:var(--surface); border:1px solid var(--border);
+    color:var(--text-dim); display:flex; align-items:center; justify-content:center;
+    font-size:13px; cursor:pointer; flex-shrink:0;
+  }
+  .icon-btn.active{ border-color:var(--gold); color:var(--gold); background:var(--gold-dim); }
+  .topbar-actions{ display:flex; align-items:center; gap:6px; }
+
+  /* ---------- Hero / spotlight signature ---------- */
+  .hero{
+    position:relative;
+    padding:22px 18px 20px;
+    border-radius:var(--radius-lg);
+    background: linear-gradient(180deg, var(--surface), var(--bg-2));
+    border:1px solid var(--border);
+    overflow:hidden;
+    margin-bottom:14px;
+  }
+  .hero::before{
+    content:"";
+    position:absolute; inset:0;
+    background: radial-gradient(160px 160px at 88% 18%, var(--gold-dim), transparent 70%);
+    pointer-events:none;
+  }
+  .eyebrow{
+    font-size:11px; letter-spacing:1.5px; color:var(--gold);
+    text-transform:none; font-weight:700; margin:0 0 6px;
+  }
+  .hero h1{
+    font-size:19px; font-weight:700; margin:0; line-height:1.6;
+    position:relative; z-index:1;
+  }
+  .hero h1 em{ color:var(--gold); font-style:normal; }
+  .today-badge{
+    position:relative; z-index:1;
+    margin-top:16px;
+    display:flex; align-items:center; gap:14px;
+  }
+  .spot-ring{
+    position:relative;
+    width:72px; height:72px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center; flex-direction:column;
+    background: radial-gradient(circle at 50% 40%, rgba(217,164,65,0.35), rgba(217,164,65,0.02) 72%);
+  }
+  .spot-ring::after{
+    content:""; position:absolute; inset:0; border-radius:50%;
+    border:1.5px solid rgba(217,164,65,0.5);
+    animation: pulse-ring 3.5s ease-in-out infinite;
+  }
+  @keyframes pulse-ring{
+    0%,100%{ opacity:0.55; transform:scale(1); }
+    50%{ opacity:1; transform:scale(1.05); }
+  }
+  .spot-ring b{ font-size:22px; font-weight:800; line-height:1; }
+  .spot-ring small{ font-size:10px; color:var(--text-muted); margin-top:2px; }
+  .today-meta{ font-size:13px; color:var(--text-dim); line-height:1.9; }
+  .today-meta b{ display:block; font-size:14px; color:var(--text); font-weight:700; }
+
+  /* ---------- Stats ---------- */
+  .stats{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px; }
+  .stat{
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-md);
+    padding:14px; position:relative; overflow:hidden;
+  }
+  .stat .stat-label{ font-size:11px; color:var(--text-muted); margin-bottom:8px; display:block; }
+  .stat .stat-value{ font-size:20px; font-weight:800; }
+  .stat .stat-value span{ font-size:12px; font-weight:500; color:var(--text-dim); margin-right:4px; }
+  .stat.next{ }
+  .stat.next .stat-value{ color:var(--gold); }
+
+  /* ---------- Calendar card ---------- */
+  .cal-card{
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg);
+    padding:16px 14px 12px; margin-bottom:16px;
+  }
+  .cal-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+  .cal-head h2{ font-size:15px; font-weight:700; margin:0; }
+  .nav-btn{
+    width:32px; height:32px; border-radius:50%; border:1px solid var(--border);
+    background:var(--surface-2); color:var(--text-dim); font-size:14px;
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+  }
+  .weekdays{ display:grid; grid-template-columns:repeat(7,1fr); margin-bottom:6px; }
+  .weekdays span{ text-align:center; font-size:10.5px; color:var(--text-muted); padding:4px 0; }
+  .weekdays span.fri{ color:var(--holiday-red); font-weight:700; }
+  .days{ display:grid; grid-template-columns:repeat(7,1fr); gap:4px; }
+  .day-cell{
+    aspect-ratio:1/1; border-radius:10px; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; position:relative;
+    font-size:12.5px; color:var(--text-dim); cursor:pointer; border:1px solid transparent;
+    background:transparent;
+  }
+  .day-cell.empty{ visibility:hidden; }
+  .day-cell.holiday{ color:var(--holiday-red); }
+  .day-cell.has-event{ background:var(--event-orange-bg); color:var(--event-orange); font-weight:700; }
+  .day-cell.has-event.holiday{ color:var(--event-orange); }
+  .day-cell.today{ border-color:rgba(217,164,65,0.55); color:var(--gold); font-weight:800; }
+  .day-cell.today.has-event{ color:var(--event-orange); }
+  .day-cell.today.holiday:not(.has-event){ color:var(--holiday-red); }
+  .day-cell.selected{ background:var(--surface-2); }
+  .day-cell.has-event.selected{ background:var(--event-orange-bg); }
+  .day-cell .dots{ display:flex; gap:2px; margin-top:3px; position:absolute; bottom:5px; }
+  .day-cell .dots i{ width:4px; height:4px; border-radius:50%; display:block; }
+
+  /* ---------- Day sheet ---------- */
+  .sheet-title{ display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+  .sheet-title h3{ font-size:15px; margin:0; font-weight:700; }
+  .sheet-title small{ color:var(--text-muted); font-size:11.5px; }
+  .add-fab{
+    width:36px; height:36px; border-radius:50%; border:none;
+    background:linear-gradient(155deg, var(--gold), #a5762b); color:#1c1305;
+    font-size:19px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center;
+  }
+  .event-item{
+    display:flex; align-items:flex-start; gap:10px; padding:12px; border-radius:var(--radius-sm);
+    background:var(--surface-2); border:1px solid var(--border); margin-bottom:8px;
+  }
+  .event-tag{ width:8px; height:8px; border-radius:50%; margin-top:6px; flex-shrink:0; }
+  .event-body{ flex:1; }
+  .event-body b{ font-size:13.5px; font-weight:700; display:block; }
+  .event-body .meta{ font-size:11.5px; color:var(--text-muted); margin-top:3px; }
+  .event-del{ background:none; border:none; color:var(--text-muted); font-size:16px; cursor:pointer; padding:2px 4px; }
+  .empty-state{ text-align:center; padding:26px 10px; color:var(--text-muted); font-size:12.5px; }
+  .empty-state span{ display:block; font-size:26px; margin-bottom:8px; }
+
+  /* ---------- Bottom sheet / modal ---------- */
+  .overlay{
+    position:fixed; inset:0; background:rgba(10,8,14,0.6); backdrop-filter: blur(2px);
+    display:none; align-items:flex-end; justify-content:center; z-index:40;
+  }
+  .overlay.show{ display:flex; }
+  .sheet{
+    width:100%; max-width:460px; background:var(--bg-2); border-radius:24px 24px 0 0;
+    border:1px solid var(--border); border-bottom:none;
+    padding:16px 16px calc(20px + env(safe-area-inset-bottom));
+    max-height:80vh; overflow-y:auto;
+    animation: slide-up 0.28s ease;
+  }
+  @keyframes slide-up{ from{ transform:translateY(30px); opacity:0; } to{ transform:translateY(0); opacity:1; } }
+  .sheet-handle{ width:36px; height:4px; border-radius:2px; background:var(--border); margin:0 auto 14px; }
+
+  /* ---------- Form ---------- */
+  .field{ margin-bottom:14px; }
+  .field label{ display:block; font-size:12px; color:var(--text-muted); margin-bottom:6px; }
+  .field input, .field textarea, .field select{
+    width:100%; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm);
+    color:var(--text); font-family:inherit; font-size:14px; padding:11px 12px; outline:none;
+  }
+  .field input:focus, .field textarea:focus, .field select:focus{ border-color:var(--gold); }
+  .field textarea{ resize:none; min-height:60px; }
+  .date-row{ display:grid; grid-template-columns:1.3fr 1.6fr 1fr; gap:8px; }
+  .date-row select{ text-align:center; }
+  .chip-row{ display:flex; gap:8px; flex-wrap:wrap; }
+  .chip{
+    padding:8px 13px; border-radius:999px; border:1px solid var(--border); background:var(--surface);
+    font-size:12.5px; color:var(--text-dim); cursor:pointer; display:flex; align-items:center; gap:6px;
+  }
+  .chip i{ width:7px; height:7px; border-radius:50%; display:block; }
+  .chip.active{ border-color:currentColor; background:var(--surface-2); color:var(--text); font-weight:700; }
+  .save-btn{
+    width:100%; padding:13px; border-radius:var(--radius-sm); border:none; margin-top:4px;
+    background:linear-gradient(155deg, var(--gold), #a5762b); color:#1c1305; font-weight:800;
+    font-size:14px; font-family:inherit; cursor:pointer;
+  }
+  .link-row{ text-align:center; margin-top:16px; }
+  .link-row a{ color:var(--text-muted); font-size:11.5px; text-decoration:none; }
+
+  :focus-visible{ outline:2px solid var(--gold); outline-offset:2px; }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="monogram">KY</div>
+      <div class="brand-text">
+        <b>کمیل یزدانی</b>
+        <span>تقویم کاری خلاق</span>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <button class="icon-btn" id="notifyBtn" title="یادآوری مراسم‌ها" aria-label="یادآوری">🔔</button>
+      <button class="icon-btn" id="backupBtn" title="گرفتن نسخه پشتیبان" aria-label="پشتیبان‌گیری">☁</button>
+      <button class="icon-btn" id="restoreBtn" title="بازیابی نسخه پشتیبان" aria-label="بازیابی">⇧</button>
+      <button class="icon-btn" id="resetBtn" title="پاک کردن همه رویدادها" aria-label="پاک کردن">⟲</button>
+      <input type="file" id="restoreFile" accept="application/json" style="display:none" />
+    </div>
+  </div>
+
+  <div class="hero">
+    <p class="eyebrow">امروز</p>
+    <h1 id="greeting">روز خوشی داشته باشی، <em>کمیل</em> ✦</h1>
+    <div class="today-badge">
+      <div class="spot-ring"><b id="todayDay">—</b><small id="todayMonth">—</small></div>
+      <div class="today-meta">
+        <b id="todayFull">—</b>
+        <span id="todayNote">برنامه‌ی امروزت رو اینجا ببین</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat next">
+      <span class="stat-label">تا نزدیک‌ترین کار</span>
+      <div class="stat-value"><b id="nextValue">—</b><span id="nextUnit">رویدادی ثبت نشده</span></div>
+    </div>
+    <div class="stat">
+      <span class="stat-label" id="monthLabel">کارهای این ماه</span>
+      <div class="stat-value"><b id="monthCount">۰</b><span>رویداد</span></div>
+    </div>
+  </div>
+
+  <div class="cal-card">
+    <div class="cal-head">
+      <button class="nav-btn" id="nextMonthBtn" aria-label="ماه بعد">‹</button>
+      <h2 id="monthTitle">—</h2>
+      <button class="nav-btn" id="prevMonthBtn" aria-label="ماه قبل">›</button>
+    </div>
+    <div class="weekdays">
+      <span>ش</span><span>ی</span><span>د</span><span>س</span><span>چ</span><span>پ</span><span class="fri">ج</span>
+    </div>
+    <div class="days" id="daysGrid"></div>
+  </div>
+
+  <div class="cal-card">
+    <div class="sheet-title">
+      <div>
+        <h3 id="selDayTitle">رویدادهای امروز</h3>
+        <small id="selDaySub">—</small>
+      </div>
+      <button class="add-fab" id="addBtn" aria-label="افزودن رویداد">+</button>
+    </div>
+    <div id="eventList"></div>
+  </div>
+
+  <div class="link-row">ساخته‌شده برای کمیل یزدانی — عکاسی · تصویربرداری · موسیقی</div>
+</div>
+
+<!-- Add/Edit Event Sheet -->
+<div class="overlay" id="formOverlay">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">
+      <h3 id="formTitle">رویداد جدید</h3>
+      <button class="icon-btn" id="closeFormBtn" aria-label="بستن">✕</button>
+    </div>
+    <div class="field">
+      <label>عنوان یا نوع مراسم</label>
+      <input type="text" id="eventTitle" placeholder="مثلاً مراسم عروسی" />
+    </div>
+    <div class="field">
+      <label>تاریخ مراسم</label>
+      <div class="date-row">
+        <select id="eventYear"></select>
+        <select id="eventMonth"></select>
+        <select id="eventDay"></select>
+      </div>
+    </div>
+    <div class="field">
+      <label>دسته</label>
+      <div class="chip-row" id="categoryChips"></div>
+    </div>
+    <div class="field">
+      <label>ساعت (اختیاری)</label>
+      <input type="time" id="eventTime" />
+    </div>
+    <div class="field">
+      <label>استودیو یا آتلیه همکار</label>
+      <input type="text" id="eventStudio" placeholder="مثلاً آتلیه آرش" />
+    </div>
+    <div class="field">
+      <label>دی‌جی / گروه موسیقی / همکار اجرایی</label>
+      <input type="text" id="eventDj" placeholder="مثلاً دی‌جی نیما" />
+    </div>
+    <div class="field">
+      <label>توضیحات</label>
+      <textarea id="eventNote" placeholder="نکته یا توضیح مهم درباره این مراسم..."></textarea>
+    </div>
+    <button class="save-btn" id="saveEventBtn">ثبت مراسم</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- Jalali <-> Gregorian conversion (verified) ---------- */
+  function div(a,b){ return Math.floor(a/b); }
+  function mod(a,b){ return a - Math.floor(a/b)*b; }
+
+  function g2d(gy, gm, gd){
+    let Y = gy, M = gm;
+    if (M <= 2) { Y -= 1; M += 12; }
+    const A = Math.floor(Y/100);
+    const B = 2 - A + Math.floor(A/4);
+    return Math.floor(365.25*(Y+4716)) + Math.floor(30.6001*(M+1)) + gd + B - 1524;
+  }
+  function d2g(jdn){
+    const A = jdn + 32044;
+    const B = Math.floor((4*A+3)/146097);
+    const C = A - Math.floor(146097*B/4);
+    const D = Math.floor((4*C+3)/1461);
+    const E = C - Math.floor(1461*D/4);
+    const M = Math.floor((5*E+2)/153);
+    const gd = E - Math.floor((153*M+2)/5) + 1;
+    const gm = M + 3 - 12*Math.floor(M/10);
+    const gy = 100*B + D - 4800 + Math.floor(M/10);
+    return {gy, gm, gd};
+  }
+  function jalCal(jy){
+    const breaks = [-61,9,38,199,426,686,756,818,1111,1181,1210,1635,2060,2097,2192,2262,2324,2394,2456,3178];
+    const bl = breaks.length;
+    const gy = jy + 621;
+    let leapJ = -14, jp = breaks[0], jump = 0;
+    for (let i=1;i<bl;i++){
+      const jm = breaks[i];
+      jump = jm - jp;
+      if (jy < jm) break;
+      leapJ = leapJ + div(jump,33)*8 + div(mod(jump,33),4);
+      jp = jm;
+    }
+    let n = jy - jp;
+    leapJ = leapJ + div(n,33)*8 + div(mod(n,33)+3,4);
+    if (mod(jump,33)===4 && jump-n===4) leapJ += 1;
+    const leapG = div(gy,4) - div((div(gy,100)+1)*3,4) - 150;
+    const march = 20 + leapJ - leapG;
+    if (jump-n < 6) n = n - jump + div(jump,33)*33;
+    let leap = mod(mod(n+1,33)-1,4);
+    if (leap === -1) leap = 4;
+    return { leap, gy, march };
+  }
+  function isLeapJalali(jy){ return jalCal(jy).leap === 0; }
+  function j2d(jy,jm,jd){
+    const r = jalCal(jy);
+    return g2d(r.gy,3,r.march) + (jm-1)*31 - div(jm,7)*(jm-7) + jd - 1;
+  }
+  function d2j(jdn){
+    const gy = d2g(jdn).gy;
+    let jy = gy - 621;
+    const r = jalCal(jy);
+    const jdn1f = g2d(r.gy,3,r.march);
+    let k = jdn - jdn1f;
+    if (k >= 0){
+      if (k <= 185) return { jy, jm: 1+div(k,31), jd: mod(k,31)+1 };
+      k -= 186;
+    } else {
+      jy -= 1; k += 179;
+      if (r.leap === 1) k += 1;
+    }
+    return { jy, jm: 7+div(k,30), jd: mod(k,30)+1 };
+  }
+  function g2j(gy,gm,gd){ return d2j(g2d(gy,gm,gd)); }
+  function j2g(jy,jm,jd){ const g = d2g(j2d(jy,jm,jd)); return [g.gy,g.gm,g.gd]; }
+  function jalaliMonthLength(jy,jm){
+    if (jm <= 6) return 31;
+    if (jm <= 11) return 30;
+    return isLeapJalali(jy) ? 30 : 29;
+  }
+
+  const MONTH_NAMES = ["فروردین","اردیبهشت","خرداد","تیر","مرداد","شهریور","مهر","آبان","آذر","دی","بهمن","اسفند"];
+  const DIGITS_FA = ["۰","۱","۲","۳","۴","۵","۶","۷","۸","۹"];
+  function faDigits(n){ return String(n).replace(/[0-9]/g, d => DIGITS_FA[d]); }
+
+  /* Fixed solar-date national holidays — same every Jalali year */
+  const FIXED_HOLIDAYS = [
+    { jm:1, jd:12, label:"روز جمهوری اسلامی" },
+    { jm:1, jd:13, label:"سیزده به‌در" },
+    { jm:3, jd:14, label:"رحلت امام خمینی" },
+    { jm:3, jd:15, label:"قیام ۱۵ خرداد" },
+    { jm:11, jd:22, label:"پیروزی انقلاب اسلامی" },
+    { jm:12, jd:29, label:"روز ملی شدن صنعت نفت" }
+  ];
+  /* Lunar (Hijri-based) official holidays — shift each solar year, curated for 1405 only.
+     For other years only Fridays + the fixed list above are marked. */
+  const LUNAR_HOLIDAYS_BY_YEAR = {
+    1405: [
+      { jm:1, jd:1, label:"عید سعید فطر" },
+      { jm:1, jd:2, label:"تعطیل عید فطر" },
+      { jm:1, jd:25, label:"شهادت امام جعفر صادق (ع)" },
+      { jm:3, jd:6, label:"عید سعید قربان" },
+      { jm:3, jd:14, label:"عید سعید غدیر خم" },
+      { jm:4, jd:3, label:"تاسوعای حسینی" },
+      { jm:4, jd:4, label:"عاشورای حسینی" },
+      { jm:5, jd:13, label:"اربعین حسینی" },
+      { jm:5, jd:21, label:"رحلت رسول اکرم و شهادت امام حسن (ع)" },
+      { jm:5, jd:22, label:"شهادت امام رضا (ع)" },
+      { jm:5, jd:30, label:"شهادت امام حسن عسکری (ع)" },
+      { jm:6, jd:8, label:"میلاد پیامبر و امام صادق (ع)" },
+      { jm:10, jd:16, label:"مبعث رسول اکرم (ص)" },
+      { jm:11, jd:4, label:"ولادت امام زمان (عج)" },
+      { jm:12, jd:9, label:"شهادت امام علی (ع)" },
+      { jm:12, jd:19, label:"عید سعید فطر" },
+      { jm:12, jd:20, label:"تعطیل عید فطر" }
+    ]
+  };
+  function isHoliday(jy, jm, jd){
+    if (FIXED_HOLIDAYS.some(h => h.jm===jm && h.jd===jd)) return true;
+    const list = LUNAR_HOLIDAYS_BY_YEAR[jy];
+    if (list && list.some(h => h.jm===jm && h.jd===jd)) return true;
+    return false;
+  }
+  function holidayLabel(jy, jm, jd){
+    const fixed = FIXED_HOLIDAYS.find(h => h.jm===jm && h.jd===jd);
+    if (fixed) return fixed.label;
+    const list = LUNAR_HOLIDAYS_BY_YEAR[jy];
+    const lunar = list && list.find(h => h.jm===jm && h.jd===jd);
+    return lunar ? lunar.label : "";
+  }
+
+  /* JS Date weekday: 0=Sun..6=Sat. Persian week starts Saturday. */
+  function jsWeekdayToPersianCol(jsDow){ return (jsDow + 1) % 7; } // Sat=0 ... Fri=6
+
+  /* ---------- State & storage ---------- */
+  const STORAGE_KEY = "ky_calendar_events_v1";
+  let events = [];
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    events = raw ? JSON.parse(raw) : [];
+  } catch(e) { events = []; }
+
+  function persist(){
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(events)); }
+    catch(e) { /* storage unavailable, state stays in memory for this session */ }
+  }
+
+  const CATEGORIES = [
+    { id:"photo", label:"عکاسی", color:"var(--teal)" },
+    { id:"video", label:"تصویربرداری", color:"var(--rose)" },
+    { id:"music", label:"موسیقی", color:"var(--gold)" },
+    { id:"other", label:"سایر", color:"var(--lav)" }
+  ];
+  function catInfo(id){ return CATEGORIES.find(c=>c.id===id) || CATEGORIES[3]; }
+
+  /* ---------- Date context ---------- */
+  const now = new Date();
+  const todayJ = g2j(now.getFullYear(), now.getMonth()+1, now.getDate());
+  let viewYear = todayJ.jy;
+  let viewMonth = todayJ.jm;
+  let selectedKey = `${todayJ.jy}-${todayJ.jm}-${todayJ.jd}`;
+  let editingId = null;
+  let formDateKey = selectedKey;
+  let selectedCategory = "photo";
+
+  function keyOf(jy,jm,jd){ return `${jy}-${jm}-${jd}`; }
+
+  /* ---------- Rendering ---------- */
+  const daysGrid = document.getElementById("daysGrid");
+  const monthTitle = document.getElementById("monthTitle");
+  const eventList = document.getElementById("eventList");
+  const selDayTitle = document.getElementById("selDayTitle");
+  const selDaySub = document.getElementById("selDaySub");
+
+  function renderHero(){
+    document.getElementById("todayDay").textContent = faDigits(todayJ.jd);
+    document.getElementById("todayMonth").textContent = MONTH_NAMES[todayJ.jm-1];
+    document.getElementById("todayFull").textContent =
+      `${faDigits(todayJ.jd)} ${MONTH_NAMES[todayJ.jm-1]} ${faDigits(todayJ.jy)}`;
+  }
+
+  function renderStats(){
+    // next upcoming event (today or later)
+    const todayD = j2d(todayJ.jy, todayJ.jm, todayJ.jd);
+    const upcoming = events
+      .map(e => ({...e, d: j2d(e.jy, e.jm, e.jd)}))
+      .filter(e => e.d >= todayD)
+      .sort((a,b) => a.d - b.d);
+
+    const nextValue = document.getElementById("nextValue");
+    const nextUnit = document.getElementById("nextUnit");
+    if (upcoming.length === 0){
+      nextValue.textContent = "—";
+      nextUnit.textContent = "رویدادی ثبت نشده";
+    } else {
+      const diff = upcoming[0].d - todayD;
+      if (diff === 0){ nextValue.textContent = "امروز"; nextUnit.textContent = upcoming[0].title; }
+      else { nextValue.textContent = faDigits(diff); nextUnit.textContent = "روز مانده"; }
+    }
+
+    const monthCount = events.filter(e => e.jy === viewYear && e.jm === viewMonth).length;
+    document.getElementById("monthCount").textContent = faDigits(monthCount);
+    document.getElementById("monthLabel").textContent = `کارهای ${MONTH_NAMES[viewMonth-1]}`;
+  }
+
+  function renderCalendar(){
+    monthTitle.textContent = `${MONTH_NAMES[viewMonth-1]} ${faDigits(viewYear)}`;
+    daysGrid.innerHTML = "";
+
+    const [gy1, gm1, gd1] = j2g(viewYear, viewMonth, 1);
+    const jsDow = new Date(gy1, gm1-1, gd1).getDay();
+    const leadingBlanks = jsWeekdayToPersianCol(jsDow);
+    const monthLen = jalaliMonthLength(viewYear, viewMonth);
+
+    for (let i=0;i<leadingBlanks;i++){
+      const blank = document.createElement("div");
+      blank.className = "day-cell empty";
+      daysGrid.appendChild(blank);
+    }
+
+    for (let d=1; d<=monthLen; d++){
+      const cell = document.createElement("button");
+      cell.type = "button";
+      cell.className = "day-cell";
+      const k = keyOf(viewYear, viewMonth, d);
+      if (k === keyOf(todayJ.jy, todayJ.jm, todayJ.jd)) cell.classList.add("today");
+      if (k === selectedKey) cell.classList.add("selected");
+
+      const colIndex = (leadingBlanks + d - 1) % 7;
+      if (colIndex === 6 || isHoliday(viewYear, viewMonth, d)) cell.classList.add("holiday");
+
+      const num = document.createElement("span");
+      num.textContent = faDigits(d);
+      cell.appendChild(num);
+
+      const dayEvents = events.filter(e => e.jy===viewYear && e.jm===viewMonth && e.jd===d);
+      if (dayEvents.length) cell.classList.add("has-event");
+      if (dayEvents.length){
+        const dots = document.createElement("div");
+        dots.className = "dots";
+        dayEvents.slice(0,3).forEach(e=>{
+          const dot = document.createElement("i");
+          dot.style.background = catInfo(e.category).color;
+          dots.appendChild(dot);
+        });
+        cell.appendChild(dots);
+      }
+
+      cell.addEventListener("click", () => {
+        selectedKey = k;
+        renderCalendar();
+        renderDayPanel();
+      });
+      daysGrid.appendChild(cell);
+    }
+  }
+
+  function renderDayPanel(){
+    const [jy,jm,jd] = selectedKey.split("-").map(Number);
+    const isToday = selectedKey === keyOf(todayJ.jy, todayJ.jm, todayJ.jd);
+    selDayTitle.textContent = isToday ? "رویدادهای امروز" : `رویدادهای ${faDigits(jd)} ${MONTH_NAMES[jm-1]}`;
+    const hLabel = holidayLabel(jy, jm, jd);
+    selDaySub.textContent = `${faDigits(jd)} ${MONTH_NAMES[jm-1]} ${faDigits(jy)}` + (hLabel ? ` · تعطیل (${hLabel})` : "");
+
+    const dayEvents = events
+      .filter(e => e.jy===jy && e.jm===jm && e.jd===jd)
+      .sort((a,b) => (a.time||"99:99").localeCompare(b.time||"99:99"));
+
+    eventList.innerHTML = "";
+    if (dayEvents.length === 0){
+      const empty = document.createElement("div");
+      empty.className = "empty-state";
+      empty.innerHTML = `<span>✦</span>هنوز رویدادی ثبت نشده. با دکمه‌ی + شروع کن.`;
+      eventList.appendChild(empty);
+      return;
+    }
+
+    dayEvents.forEach(e => {
+      const item = document.createElement("div");
+      item.className = "event-item";
+      const tag = document.createElement("div");
+      tag.className = "event-tag";
+      tag.style.background = catInfo(e.category).color;
+      const body = document.createElement("div");
+      body.className = "event-body";
+      const timeStr = e.time ? `${faDigits(e.time)} · ` : "";
+      const extras = [
+        e.studio ? "آتلیه: " + escapeHtml(e.studio) : "",
+        e.dj ? "دی‌جی: " + escapeHtml(e.dj) : "",
+        e.note ? escapeHtml(e.note) : ""
+      ].filter(Boolean).join(" · ");
+      body.innerHTML = `<b>${escapeHtml(e.title)}</b><span class="meta">${timeStr}${catInfo(e.category).label}${extras ? " · " + extras : ""}</span>`;
+      const del = document.createElement("button");
+      del.className = "event-del";
+      del.textContent = "✕";
+      del.addEventListener("click", () => {
+        events = events.filter(x => x.id !== e.id);
+        persist();
+        renderAll();
+      });
+      item.appendChild(tag);
+      item.appendChild(body);
+      item.appendChild(del);
+      eventList.appendChild(item);
+    });
+  }
+
+  function escapeHtml(s){
+    return (s||"").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function renderAll(){
+    renderHero();
+    renderStats();
+    renderCalendar();
+    renderDayPanel();
+  }
+
+  /* ---------- Nav (RTL: prev button visually right, semantics kept by id) ---------- */
+  document.getElementById("nextMonthBtn").addEventListener("click", () => {
+    viewMonth -= 1;
+    if (viewMonth < 1){ viewMonth = 12; viewYear -= 1; }
+    renderAll();
+  });
+  document.getElementById("prevMonthBtn").addEventListener("click", () => {
+    viewMonth += 1;
+    if (viewMonth > 12){ viewMonth = 1; viewYear += 1; }
+    renderAll();
+  });
+
+  /* ---------- Form / add event ---------- */
+  const formOverlay = document.getElementById("formOverlay");
+  const categoryChips = document.getElementById("categoryChips");
+  CATEGORIES.forEach(c => {
+    const chip = document.createElement("button");
+    chip.type = "button";
+    chip.className = "chip";
+    chip.style.color = c.color;
+    chip.innerHTML = `<i style="background:${c.color}"></i>${c.label}`;
+    chip.addEventListener("click", () => {
+      selectedCategory = c.id;
+      [...categoryChips.children].forEach(ch => ch.classList.remove("active"));
+      chip.classList.add("active");
+    });
+    categoryChips.appendChild(chip);
+  });
+
+  /* ---------- Manual date picker inside the form ---------- */
+  const yearSel = document.getElementById("eventYear");
+  const monthSel = document.getElementById("eventMonth");
+  const daySel = document.getElementById("eventDay");
+
+  function populateYearMonth(){
+    yearSel.innerHTML = "";
+    for (let y = todayJ.jy - 1; y <= todayJ.jy + 3; y++){
+      const opt = document.createElement("option");
+      opt.value = y; opt.textContent = faDigits(y);
+      yearSel.appendChild(opt);
+    }
+    monthSel.innerHTML = "";
+    MONTH_NAMES.forEach((name, i) => {
+      const opt = document.createElement("option");
+      opt.value = i + 1; opt.textContent = name;
+      monthSel.appendChild(opt);
+    });
+  }
+  function populateDays(){
+    const y = Number(yearSel.value), m = Number(monthSel.value);
+    const len = jalaliMonthLength(y, m);
+    const prevDay = Number(daySel.value) || 1;
+    daySel.innerHTML = "";
+    for (let d = 1; d <= len; d++){
+      const opt = document.createElement("option");
+      opt.value = d; opt.textContent = faDigits(d);
+      daySel.appendChild(opt);
+    }
+    daySel.value = Math.min(prevDay, len);
+  }
+  populateYearMonth();
+  populateDays();
+  yearSel.addEventListener("change", populateDays);
+  monthSel.addEventListener("change", populateDays);
+
+  function setFormDate(jy, jm, jd){
+    yearSel.value = jy;
+    monthSel.value = jm;
+    populateDays();
+    daySel.value = jd;
+  }
+
+  function openForm(){
+    editingId = null;
+    document.getElementById("formTitle").textContent = "ثبت مراسم جدید";
+    document.getElementById("eventTitle").value = "";
+    document.getElementById("eventTime").value = "";
+    document.getElementById("eventStudio").value = "";
+    document.getElementById("eventDj").value = "";
+    document.getElementById("eventNote").value = "";
+    selectedCategory = "photo";
+    [...categoryChips.children].forEach((ch,i) => ch.classList.toggle("active", i===0));
+    const [jy,jm,jd] = selectedKey.split("-").map(Number);
+    setFormDate(jy, jm, jd);
+    formOverlay.classList.add("show");
+    setTimeout(() => document.getElementById("eventTitle").focus(), 250);
+  }
+  function closeForm(){ formOverlay.classList.remove("show"); }
+
+  document.getElementById("addBtn").addEventListener("click", openForm);
+  document.getElementById("closeFormBtn").addEventListener("click", closeForm);
+  formOverlay.addEventListener("click", (e) => { if (e.target === formOverlay) closeForm(); });
+
+  document.getElementById("saveEventBtn").addEventListener("click", () => {
+    const title = document.getElementById("eventTitle").value.trim();
+    if (!title){
+      document.getElementById("eventTitle").focus();
+      return;
+    }
+    const jy = Number(yearSel.value), jm = Number(monthSel.value), jd = Number(daySel.value);
+    events.push({
+      id: Date.now() + "-" + Math.random().toString(36).slice(2,7),
+      title,
+      category: selectedCategory,
+      time: document.getElementById("eventTime").value || "",
+      studio: document.getElementById("eventStudio").value.trim(),
+      dj: document.getElementById("eventDj").value.trim(),
+      note: document.getElementById("eventNote").value.trim(),
+      jy, jm, jd
+    });
+    persist();
+    closeForm();
+    selectedKey = keyOf(jy, jm, jd);
+    viewYear = jy; viewMonth = jm;
+    renderAll();
+  });
+
+  document.getElementById("resetBtn").addEventListener("click", () => {
+    if (events.length === 0) return;
+    if (confirm("همه‌ی رویدادهای ذخیره‌شده پاک بشه؟ (پیشنهاد می‌کنیم قبلش پشتیبان بگیرید)")){
+      events = [];
+      persist();
+      renderAll();
+    }
+  });
+
+  /* ---------- Backup / restore ---------- */
+  document.getElementById("backupBtn").addEventListener("click", () => {
+    const payload = JSON.stringify({ app: "ky-calendar", exportedAt: new Date().toISOString(), events }, null, 2);
+    const blob = new Blob([payload], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    const stamp = `${todayJ.jy}-${String(todayJ.jm).padStart(2,"0")}-${String(todayJ.jd).padStart(2,"0")}`;
+    a.href = url;
+    a.download = `ky-calendar-backup-${stamp}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  });
+
+  document.getElementById("restoreBtn").addEventListener("click", () => {
+    document.getElementById("restoreFile").click();
+  });
+  document.getElementById("restoreFile").addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const data = JSON.parse(reader.result);
+        const imported = Array.isArray(data) ? data : (Array.isArray(data.events) ? data.events : null);
+        if (!imported) throw new Error("invalid file");
+        const existingIds = new Set(events.map(ev => ev.id));
+        let added = 0;
+        imported.forEach(ev => {
+          if (ev && ev.title && ev.jy && ev.jm && ev.jd){
+            if (!ev.id || existingIds.has(ev.id)){
+              ev.id = Date.now() + "-" + Math.random().toString(36).slice(2,7);
+            }
+            events.push(ev);
+            added++;
+          }
+        });
+        persist();
+        renderAll();
+        alert(`${faDigits(added)} رویداد بازیابی شد.`);
+      } catch(err){
+        alert("فایل پشتیبان معتبر نیست.");
+      }
+      e.target.value = "";
+    };
+    reader.readAsText(file);
+  });
+
+  /* ---------- Reminders (browser notifications, checked whenever the app is open) ---------- */
+  const NOTIFY_KEY = "ky_calendar_notify_enabled";
+  const NOTIFY_LAST_KEY = "ky_calendar_notify_lastcheck";
+  const notifyBtn = document.getElementById("notifyBtn");
+
+  function notifyEnabled(){
+    try { return localStorage.getItem(NOTIFY_KEY) === "1"; } catch(e){ return false; }
+  }
+  function setNotifyEnabled(v){
+    try { localStorage.setItem(NOTIFY_KEY, v ? "1" : "0"); } catch(e){}
+  }
+  function refreshNotifyBtn(){
+    notifyBtn.classList.toggle("active", notifyEnabled() && typeof Notification !== "undefined" && Notification.permission === "granted");
+  }
+
+  function checkAndFireReminders(){
+    if (!notifyEnabled()) return;
+    if (typeof Notification === "undefined" || Notification.permission !== "granted") return;
+    let lastCheck = "";
+    try { lastCheck = localStorage.getItem(NOTIFY_LAST_KEY) || ""; } catch(e){}
+    const stamp = keyOf(todayJ.jy, todayJ.jm, todayJ.jd);
+    if (lastCheck === stamp) return; // already notified once today
+
+    const todayEvents = events.filter(e => e.jy===todayJ.jy && e.jm===todayJ.jm && e.jd===todayJ.jd);
+    const tomorrowD = j2d(todayJ.jy, todayJ.jm, todayJ.jd) + 1;
+    const tj = d2j(tomorrowD);
+    const tomorrowEvents = events.filter(e => e.jy===tj.jy && e.jm===tj.jm && e.jd===tj.jd);
+
+    todayEvents.forEach(e => {
+      new Notification("📅 مراسم امروز", { body: `${e.title} — امروز`, tag: "ky-" + e.id });
+    });
+    tomorrowEvents.forEach(e => {
+      new Notification("📅 یادآوری مراسم فردا", { body: `${e.title} — فردا`, tag: "ky-" + e.id });
+    });
+    try { localStorage.setItem(NOTIFY_LAST_KEY, stamp); } catch(e){}
+  }
+
+  notifyBtn.addEventListener("click", () => {
+    if (typeof Notification === "undefined"){
+      alert("مرورگر شما از یادآوری پشتیبانی نمی‌کند.");
+      return;
+    }
+    if (Notification.permission === "granted"){
+      const next = !notifyEnabled();
+      setNotifyEnabled(next);
+      refreshNotifyBtn();
+      alert(next ? "یادآوری روشن شد. هر بار اپ رو باز کنی، مراسم‌های امروز و فردا رو بهت یادآوری می‌کنه." : "یادآوری خاموش شد.");
+      if (next) checkAndFireReminders();
+    } else if (Notification.permission === "denied"){
+      alert("اجازه‌ی نوتیفیکیشن قبلاً رد شده. باید از تنظیمات مرورگر/گوشی برای این سایت اجازه بدید.");
+    } else {
+      Notification.requestPermission().then(perm => {
+        if (perm === "granted"){
+          setNotifyEnabled(true);
+          refreshNotifyBtn();
+          alert("یادآوری روشن شد. هر بار اپ رو باز کنی، مراسم‌های امروز و فردا رو بهت یادآوری می‌کنه.");
+          checkAndFireReminders();
+        }
+      });
+    }
+  });
+
+  refreshNotifyBtn();
+  if (typeof Notification !== "undefined" && Notification.permission === "granted" && notifyEnabled()){
+    checkAndFireReminders();
+  }
+
+  renderAll();
+
+  if ("serviceWorker" in navigator){
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("sw.js").catch(() => {});
+    });
+  }
+})();
+</script>
+</body>
+</html>
